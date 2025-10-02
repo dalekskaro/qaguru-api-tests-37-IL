@@ -1,0 +1,33 @@
+plugins {
+    id 'java-library'
+}
+
+group = 'guru.qa.api'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+def restAssuredVersion = '5.5.0',
+    junitJupiterVersion = '5.11.0',
+    slf4jSimpleVersion = '2.0.17'
+
+dependencies {
+    testImplementation(
+            "io.rest-assured:rest-assured:$restAssuredVersion",
+            "org.junit.jupiter:junit-jupiter:$junitJupiterVersion",
+            "org.slf4j:slf4j-simple:$slf4jSimpleVersion"
+    )
+}
+
+tasks.withType(Test) {
+    useJUnitPlatform()
+
+    testLogging {
+        lifecycle {
+            events "started", "skipped", "failed", "standard_error", "standard_out"
+            exceptionFormat "short"
+        }
+    }
+}
