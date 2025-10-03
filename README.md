@@ -1,4 +1,9 @@
 # qaguru-api-tests-37-IL
+## Запуск домашки #13:
+```bash
+./gradlew clean homework-13
+```
+
 
 ## RestAssured
 ```java
@@ -25,8 +30,20 @@ given()
 - `.log().status()` - логируем статус ответа
 - `.log().body()` - логируем тело ответа  
 
+```json
+{
+    "total": 5,
+    "browsers": {
+        "chrome": {
+            "127.0": {},
+            "128.0": {}
+        }
+    }
+}
+```
+
 Проверки
 - `.body("total", is(5))` - параметр тела ответа "total" равен 5 (библиотека `org.hamcrest.Matchers`)
-- `.body("browsers.chrome", hasKey("128.0"))` - в массиве "chrome" массива "browsers" есть значение "128.0"
+- `.body("browsers.chrome", hasKey("128.0"))` - в массиве "chrome" массива "browsers" есть параметр "128.0"
 
 <img width="40%" title="uri" src="media/uri.png">
