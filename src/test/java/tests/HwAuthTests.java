@@ -15,12 +15,12 @@ import org.junit.jupiter.api.Test;
 
 @Tag("homework-13")
 public class HwAuthTests extends BaseTest{
-  private static final ObjectMapper mapper = new ObjectMapper();
+  private static final ObjectMapper MAPPER = new ObjectMapper();
 
   @BeforeAll
   static void auth() throws IOException {
     InputStream is = BaseTest.class.getClassLoader().getResourceAsStream("json/AuthBody.json");
-    AuthRequest request = mapper.readValue(is, AuthRequest.class);
+    AuthRequest request = MAPPER.readValue(is, AuthRequest.class);
 
     int status = given()
         .body(request)
@@ -45,7 +45,7 @@ public class HwAuthTests extends BaseTest{
   @DisplayName("Успешная авторизация (генерация токена)")
   void successfulLoginTest() throws IOException {
     InputStream is = getClass().getClassLoader().getResourceAsStream("json/AuthBody.json");
-    AuthRequest request = mapper.readValue(is, AuthRequest.class);
+    AuthRequest request = MAPPER.readValue(is, AuthRequest.class);
 
     given()
         .body(request)
