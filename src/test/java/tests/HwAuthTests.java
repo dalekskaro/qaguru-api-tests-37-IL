@@ -43,7 +43,7 @@ public class HwAuthTests extends BaseTest {
   }
 
   @Test
-  @DisplayName("Успешная авторизация (генерация токена)")
+  @DisplayName("POST Успешная авторизация (генерация токена)")
   void successfulLoginTest() throws IOException {
     InputStream is = getClass().getClassLoader().getResourceAsStream("json/AuthBody.json");
     AuthRequest request = MAPPER.readValue(is, AuthRequest.class);
@@ -62,7 +62,7 @@ public class HwAuthTests extends BaseTest {
   }
 
   @Test
-  @DisplayName("Неспешная авторизация (пароль не верный)")
+  @DisplayName("POST Неспешная авторизация (пароль не верный)")
   void unsuccessfulLoginIncorrectPasswordTest() {
     String authData = "{\"userName\": \"attano37\", \"password\": \".String37\"}";
 
@@ -82,7 +82,7 @@ public class HwAuthTests extends BaseTest {
   }
 
   @Test
-  @DisplayName("Неуспешная авторизация (пользователя не существует)")
+  @DisplayName("POST Неуспешная авторизация (пользователя не существует)")
   void unsuccessfulLoginIncorrectUserNameTest() {
     String authData = "{\"userName\": \"attano\", \"password\": \".String37!\"}";
 

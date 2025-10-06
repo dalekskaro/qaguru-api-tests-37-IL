@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 public class HwBooksTests extends BaseTest {
 
   @Test
-  @DisplayName("Получение списка книг")
+  @DisplayName("GET Получение списка книг")
   void getAllBooksTest() {
     given()
         .contentType(JSON)
@@ -31,7 +31,7 @@ public class HwBooksTests extends BaseTest {
   }
 
   @Test
-  @DisplayName("Получение списка книг при помощи ISBN")
+  @DisplayName("GET Получение списка книг при помощи ISBN")
   void getBooksByIsbnTest() {
     given()
         .contentType(JSON)
