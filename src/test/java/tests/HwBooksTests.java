@@ -17,10 +17,8 @@ public class HwBooksTests extends BaseTest {
     given()
         .contentType(JSON)
         .log().uri()
-
         .when()
         .get("/BookStore/v1/Books")
-
         .then()
         .log().body()
         .statusCode(200)
@@ -39,10 +37,8 @@ public class HwBooksTests extends BaseTest {
         .contentType(JSON)
         .log().uri()
         .queryParam("ISBN", "9781449325862")
-
         .when()
         .get("/BookStore/v1/Books")
-
         .then()
         .log().body()
         .statusCode(200)

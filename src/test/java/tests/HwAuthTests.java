@@ -14,7 +14,8 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 @Tag("homework-13")
-public class HwAuthTests extends BaseTest{
+public class HwAuthTests extends BaseTest {
+
   private static final ObjectMapper MAPPER = new ObjectMapper();
 
   @BeforeAll
@@ -51,10 +52,8 @@ public class HwAuthTests extends BaseTest{
         .body(request)
         .contentType(JSON)
         .log().uri()
-
         .when()
         .post("/Account/v1/GenerateToken")
-
         .then()
         .log().all()
         .statusCode(200)
@@ -71,10 +70,8 @@ public class HwAuthTests extends BaseTest{
         .body(authData)
         .contentType(JSON)
         .log().uri()
-
         .when()
         .post("/Account/v1/GenerateToken")
-
         .then()
         .log().all()
         .statusCode(200)
@@ -85,7 +82,7 @@ public class HwAuthTests extends BaseTest{
   }
 
   @Test
-  @DisplayName("Неспешная авторизация (пользователя не существует)")
+  @DisplayName("Неуспешная авторизация (пользователя не существует)")
   void unsuccessfulLoginIncorrectUserNameTest() {
     String authData = "{\"userName\": \"attano\", \"password\": \".String37!\"}";
 
@@ -93,10 +90,8 @@ public class HwAuthTests extends BaseTest{
         .body(authData)
         .contentType(JSON)
         .log().uri()
-
         .when()
         .post("/Account/v1/GenerateToken")
-
         .then()
         .log().all()
         .statusCode(200)
