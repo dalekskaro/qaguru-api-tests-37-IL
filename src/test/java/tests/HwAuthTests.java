@@ -62,7 +62,7 @@ public class HwAuthTests extends BaseTest {
   }
 
   @Test
-  @DisplayName("POST Неспешная авторизация (пароль не верный)")
+  @DisplayName("POST Неуспешная авторизация (пароль не верный)")
   void unsuccessfulLoginIncorrectPasswordTest() {
     String authData = "{\"userName\": \"attano37\", \"password\": \".String37\"}";
 
