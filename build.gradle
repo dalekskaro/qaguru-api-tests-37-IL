@@ -11,13 +11,16 @@ repositories {
 
 def restAssuredVersion = '5.5.0',
     junitJupiterVersion = '5.11.0',
-    slf4jSimpleVersion = '2.0.17'
+    slf4jSimpleVersion = '2.0.17',
+    jacksonVersion = '2.19.0'
 
 dependencies {
     testImplementation(
             "io.rest-assured:rest-assured:$restAssuredVersion",
             "org.junit.jupiter:junit-jupiter:$junitJupiterVersion",
-            "org.slf4j:slf4j-simple:$slf4jSimpleVersion"
+            "org.slf4j:slf4j-simple:$slf4jSimpleVersion",
+            "com.fasterxml.jackson.core:jackson-core:$jacksonVersion",
+            "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
     )
 }
 
@@ -29,5 +32,11 @@ tasks.withType(Test) {
             events "started", "skipped", "failed", "standard_error", "standard_out"
             exceptionFormat "short"
         }
+    }
+}
+
+tasks.register('homework-13', Test) {
+    useJUnitPlatform {
+        includeTags("homework-13")
     }
 }

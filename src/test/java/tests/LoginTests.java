@@ -18,6 +18,7 @@ public class LoginTests {
     String authData = "{\"email\": \"eve.holt@reqres.in\", \"password\": \"cityslicka\"}";
 
     given()
+        .header("x-api-key", "reqres-free-v1")
         .body(authData)
         .contentType(JSON)
         .log().uri()
@@ -37,6 +38,7 @@ public class LoginTests {
     String authData = "";
 
     given()
+        .header("x-api-key", "reqres-free-v1")
         .body(authData)
         .log().uri()
 
@@ -55,6 +57,7 @@ public class LoginTests {
     String authData = "{\"email\": \"eveasdas.holt@reqres.in\", \"password\": \"cda\"}";
 
     given()
+        .header("x-api-key", "reqres-free-v1")
         .body(authData)
         .contentType(JSON)
         .log().uri()
@@ -74,6 +77,7 @@ public class LoginTests {
     String authData = "{\"email\": \"eveasdas.holt@reqres.in\"}";
 
     given()
+        .header("x-api-key", "reqres-free-v1")
         .body(authData)
         .contentType(JSON)
         .log().uri()
@@ -94,6 +98,7 @@ public class LoginTests {
     String authData = "{\"password\": \"cda\"}";
 
     given()
+        .header("x-api-key", "reqres-free-v1")
         .body(authData)
         .contentType(JSON)
         .log().uri()
@@ -113,6 +118,7 @@ public class LoginTests {
     String authData = "%}";
 
     given()
+        .header("x-api-key", "reqres-free-v1")
         .body(authData)
         .contentType(JSON)
         .log().uri()
@@ -129,6 +135,7 @@ public class LoginTests {
   @Test
   void unsuccessfulLogin415Test() {
     given()
+        .header("x-api-key", "reqres-free-v1")
         .log().uri()
         .post("https://reqres.in/api/login")
         .then()
