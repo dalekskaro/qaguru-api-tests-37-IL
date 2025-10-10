@@ -1,5 +1,7 @@
 plugins {
     id 'java-library'
+    id 'io.qameta.allure' version '3.0.0'
+    id "io.freefair.lombok" version "9.0.0"
 }
 
 group = 'guru.qa.api'
@@ -9,18 +11,36 @@ repositories {
     mavenCentral()
 }
 
-def restAssuredVersion = '5.5.0',
+def restAssuredVersion = '5.5.2',
     junitJupiterVersion = '5.11.0',
     slf4jSimpleVersion = '2.0.17',
-    jacksonVersion = '2.19.0'
+    jacksonVersion = '2.19.0',
+    allureVersion = "2.21.0",
+    assertjVersion = '3.27.3'
+
+allure {
+    report {
+        version.set(allureVersion)
+    }
+    adapter {
+        aspectjWeaver.set(true)
+        frameworks {
+            junit5 {
+                adapterVersion.set(allureVersion)
+            }
+        }
+    }
+}
 
 dependencies {
     testImplementation(
             "io.rest-assured:rest-assured:$restAssuredVersion",
+            "io.qameta.allure:allure-rest-assured:$allureVersion",
             "org.junit.jupiter:junit-jupiter:$junitJupiterVersion",
             "org.slf4j:slf4j-simple:$slf4jSimpleVersion",
             "com.fasterxml.jackson.core:jackson-core:$jacksonVersion",
-            "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
+            "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion",
+            "org.assertj:assertj-core:$assertjVersion"
     )
 }
 
@@ -38,5 +58,12 @@ tasks.withType(Test) {
 tasks.register('homework-13', Test) {
     useJUnitPlatform {
         includeTags("homework-13")
+    }
+}
+
+task test_for_jenkins(type: Test) {
+    systemProperties(System.getProperties())
+    useJUnitPlatform {
+        includeTags("homework-14")
     }
 }

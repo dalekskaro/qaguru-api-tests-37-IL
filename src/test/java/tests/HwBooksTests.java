@@ -1,15 +1,23 @@
 package tests;
 
+import io.restassured.RestAssured;
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 @Tag("homework-13")
-public class HwBooksTests extends BaseTest {
+public class HwBooksTests {
+
+  @BeforeAll
+  static void setUri() {
+    RestAssured.baseURI = "https://demoqa.com";
+  }
+
 
   @Test
   @DisplayName("GET Получение списка книг")

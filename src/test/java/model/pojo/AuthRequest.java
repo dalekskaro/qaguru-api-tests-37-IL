@@ -1,4 +1,4 @@
-package model;
+package model.pojo;
 
 public class AuthRequest {
   private String userName;
