@@ -1,11 +1,12 @@
 package tests;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.restassured.RestAssured;
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import java.io.IOException;
 import java.io.InputStream;
-import model.AuthRequest;
+import model.pojo.AuthRequest;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import org.junit.jupiter.api.BeforeAll;
@@ -14,13 +15,18 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 @Tag("homework-13")
-public class HwAuthTests extends BaseTest {
+public class HwAuthTests {
 
   private static final ObjectMapper MAPPER = new ObjectMapper();
 
   @BeforeAll
+  static void setUri() {
+    RestAssured.baseURI = "https://demoqa.com";
+  }
+
+  @BeforeAll
   static void auth() throws IOException {
-    InputStream is = BaseTest.class.getClassLoader().getResourceAsStream("json/AuthBody.json");
+    InputStream is = HwAuthTests.class.getClassLoader().getResourceAsStream("json/AuthBody.json");
     AuthRequest request = MAPPER.readValue(is, AuthRequest.class);
 
     int status = given()
