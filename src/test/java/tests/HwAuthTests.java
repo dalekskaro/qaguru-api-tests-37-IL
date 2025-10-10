@@ -2,6 +2,9 @@ package tests;
 
 import com.github.javafaker.Faker;
 import static io.qameta.allure.Allure.step;
+import io.qameta.allure.Description;
+import io.qameta.allure.Epic;
+import io.qameta.allure.Owner;
 import static io.restassured.RestAssured.given;
 import java.time.Year;
 import java.util.Locale;
@@ -16,6 +19,8 @@ import static specs.DemoQaSpec.demoQaRequestSpecification;
 import static specs.ResponceSpec.responseSpecification;
 
 @Tag("homework-14")
+@Epic("DemoQa. Проверка авторизации")
+@Owner("Irina Attano")
 public class HwAuthTests {
 
   static Faker faker = new Faker(new Locale("en"));
@@ -51,7 +56,8 @@ public class HwAuthTests {
   }
 
   @Test
-  @DisplayName("POST Успешная авторизация (генерация токена)")
+  @Description("Успешная авторизация (генерация токена)")
+  @DisplayName("POST /Account/v1/GenerateToken")
   void successfulLoginTest() {
     String year = String.valueOf(Year.now().getValue());
     AuthDemoQaModel body = new AuthDemoQaModel();
@@ -92,7 +98,8 @@ public class HwAuthTests {
   }
 
   @Test
-  @DisplayName("POST Неуспешная авторизация (пароль не верный)")
+  @Description("Неуспешная авторизация (пароль не верный)")
+  @DisplayName("POST /Account/v1/GenerateToken. Wrong password")
   void unsuccessfulLoginIncorrectPasswordTest() {
     AuthDemoQaModel body = new AuthDemoQaModel();
     body.setUserName(loginForUser);
@@ -132,7 +139,8 @@ public class HwAuthTests {
   }
 
   @Test
-  @DisplayName("POST Неуспешная авторизация (пользователя не существует)")
+  @Description("Неуспешная авторизация (пользователя не существует)")
+  @DisplayName("POST /Account/v1/GenerateToken. User not exist")
   void unsuccessfulLoginIncorrectUserNameTest() {
     AuthDemoQaModel body = new AuthDemoQaModel();
     body.setUserName(loginForUser + "1");

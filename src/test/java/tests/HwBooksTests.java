@@ -1,6 +1,9 @@
 package tests;
 
 import static io.qameta.allure.Allure.step;
+import io.qameta.allure.Description;
+import io.qameta.allure.Epic;
+import io.qameta.allure.Owner;
 import static io.restassured.RestAssured.given;
 import model.lombok.BookDemoQaModel;
 import model.lombok.BooksDemoQaModel;
@@ -12,10 +15,13 @@ import static specs.DemoQaSpec.demoQaRequestSpecification;
 import static specs.ResponceSpec.responseSpecification;
 
 @Tag("homework-14")
+@Epic("DemoQa. Проверка данных по книге")
+@Owner("Irina Attano")
 public class HwBooksTests {
 
   @Test
-  @DisplayName("GET Получение списка книг")
+  @Description("Получение списка книг")
+  @DisplayName("GET /BookStore/v1/Books")
   void getAllBooksTest() {
     BooksDemoQaModel response = step("Совершаем вызов метода", () ->
         given(demoQaRequestSpecification)
@@ -60,7 +66,8 @@ public class HwBooksTests {
   }
 
   @Test
-  @DisplayName("GET Получение списка книг при помощи ISBN")
+  @Description("Получение списка книг при помощи ISBN")
+  @DisplayName("GET /BookStore/v1/Books?ISBN={isbn}")
   void getBooksByIsbnTest() {
     BooksDemoQaModel response = step("Совершаем вызов метода", () ->
         given(demoQaRequestSpecification)

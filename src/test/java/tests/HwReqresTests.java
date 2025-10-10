@@ -2,6 +2,10 @@ package tests;
 
 import com.github.javafaker.Faker;
 import static io.qameta.allure.Allure.step;
+import io.qameta.allure.Description;
+import io.qameta.allure.Epic;
+import io.qameta.allure.Owner;
+import io.qameta.allure.Story;
 import static io.restassured.RestAssured.given;
 import java.time.LocalDate;
 import java.util.Locale;
@@ -15,6 +19,8 @@ import org.junit.jupiter.api.Test;
 import static specs.ReqresSpec.reqresRequestSpecification;
 
 @Tag("homework-14")
+@Epic("Reqres. Проверка изменения данных юзера")
+@Owner("Irina Attano")
 public class HwReqresTests {
 
   static Faker faker = new Faker(new Locale("en"));
@@ -26,7 +32,8 @@ public class HwReqresTests {
       date = LocalDate.now().toString();
 
   @Test
-  @DisplayName("PATCH Изменение частичной информации о юзере")
+  @Description("Изменение частичной информации о юзере")
+  @DisplayName("PATCH /api/users/{id}")
   void patchUserTest() {
     UserReqresRequestModel body = new UserReqresRequestModel();
     body.setEmail(userEmail);
@@ -56,7 +63,8 @@ public class HwReqresTests {
   }
 
   @Test
-  @DisplayName("PUT Изменение информации о юзере")
+  @Description("Изменение информации о юзере")
+  @DisplayName("PUT /api/users/{id}")
   void putUserTest() {
     UserReqresRequestModel body = new UserReqresRequestModel();
     body.setEmail(userEmail);
@@ -96,7 +104,8 @@ public class HwReqresTests {
   }
 
   @Test
-  @DisplayName("DELETE Удаление пользователя")
+  @Description("Удаление пользователя")
+  @DisplayName("DELETE /api/users/{id}")
   void deleteUserTest() {
 
     int statusCode = step("Совершаем вызов метода", () ->
