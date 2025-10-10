@@ -16,7 +16,8 @@ def restAssuredVersion = '5.5.2',
     slf4jSimpleVersion = '2.0.17',
     jacksonVersion = '2.19.0',
     allureVersion = "2.21.0",
-    assertjVersion = '3.27.3'
+    assertjVersion = '3.27.3',
+    fakerVersion = '1.0.2'
 
 allure {
     report {
@@ -40,7 +41,8 @@ dependencies {
             "org.slf4j:slf4j-simple:$slf4jSimpleVersion",
             "com.fasterxml.jackson.core:jackson-core:$jacksonVersion",
             "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion",
-            "org.assertj:assertj-core:$assertjVersion"
+            "org.assertj:assertj-core:$assertjVersion",
+            "com.github.javafaker:javafaker:$fakerVersion",
     )
 }
 
@@ -55,13 +57,7 @@ tasks.withType(Test) {
     }
 }
 
-tasks.register('homework-13', Test) {
-    useJUnitPlatform {
-        includeTags("homework-13")
-    }
-}
-
-task test_for_jenkins(type: Test) {
+tasks.register('homework-14', Test) {
     systemProperties(System.getProperties())
     useJUnitPlatform {
         includeTags("homework-14")
