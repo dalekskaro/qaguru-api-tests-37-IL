@@ -5,18 +5,18 @@ import static io.qameta.allure.Allure.step;
 import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Owner;
-import io.qameta.allure.Story;
 import static io.restassured.RestAssured.given;
 import java.time.LocalDate;
 import java.util.Locale;
-import model.lombok.UserReqresRequestModel;
-import model.lombok.UserReqresResponseModel;
+import model.UserReqresRequestModel;
+import model.UserReqresResponseModel;
 import org.assertj.core.api.SoftAssertions;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import static specs.ReqresSpec.reqresRequestSpecification;
+import static specs.ResponceSpec.responseSpecification;
 
 @Tag("homework-14")
 @Epic("Reqres. Проверка изменения данных юзера")
@@ -44,7 +44,7 @@ public class HwReqresTests {
             .when()
             .patch("/api/users/" + userId)
             .then()
-            .statusCode(200)
+            .spec(responseSpecification(200))
             .extract().as(UserReqresResponseModel.class));
 
     step("Проверяем тело ответа", () ->
@@ -77,7 +77,7 @@ public class HwReqresTests {
             .when()
             .put("/api/users/" + userId)
             .then()
-            .statusCode(200)
+            .spec(responseSpecification(200))
             .extract().as(UserReqresResponseModel.class));
 
     step("Проверяем тело ответа", () ->
@@ -113,6 +113,7 @@ public class HwReqresTests {
             .when()
             .delete("/api/users/" + userId)
             .then()
+            .spec(responseSpecification(204))
             .extract().statusCode());
 
     step("Проверяем статус код", () -> assertEquals(204, statusCode));

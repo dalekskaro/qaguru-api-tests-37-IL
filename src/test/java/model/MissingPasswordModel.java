@@ -1,4 +1,4 @@
-package model.lombok;
+package model;
 
 import lombok.Data;
 

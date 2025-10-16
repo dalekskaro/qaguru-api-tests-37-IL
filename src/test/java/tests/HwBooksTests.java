@@ -5,8 +5,8 @@ import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Owner;
 import static io.restassured.RestAssured.given;
-import model.lombok.BookDemoQaModel;
-import model.lombok.BooksDemoQaModel;
+import model.BookDemoQaModel;
+import model.BooksDemoQaModel;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -28,8 +28,7 @@ public class HwBooksTests {
             .when()
             .get("/BookStore/v1/Books")
             .then()
-            .spec(responseSpecification)
-            .statusCode(200)
+            .spec(responseSpecification(200))
             .extract().as(BooksDemoQaModel.class));
 
     step("Проверяем тело ответа", () ->
@@ -75,8 +74,7 @@ public class HwBooksTests {
             .when()
             .get("/BookStore/v1/Books")
             .then()
-            .spec(responseSpecification)
-            .statusCode(200)
+            .spec(responseSpecification(200))
             .extract().as(BooksDemoQaModel.class));
 
     step("Проверяем тело ответа", () ->

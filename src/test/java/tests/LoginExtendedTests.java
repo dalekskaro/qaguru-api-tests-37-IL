@@ -6,11 +6,9 @@ import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.RestAssured;
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
-import model.lombok.LoginBodyLombokModel;
-import model.lombok.LoginResponseLombokModel;
-import model.lombok.MissingPasswordModel;
-import model.pojo.LoginBodyModel;
-import model.pojo.LoginResponseModel;
+import model.LoginBodyLombokModel;
+import model.LoginResponseLombokModel;
+import model.MissingPasswordModel;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -23,30 +21,6 @@ public class LoginExtendedTests {
   @BeforeAll
   public static void setUp() {
     RestAssured.baseURI = "https://reqres.in";
-  }
-
-  @Test
-  void pojoSuccessfulLoginTest() {
-    LoginBodyModel authData = new LoginBodyModel();
-    authData.setEmail("eve.holt@reqres.in");
-    authData.setPassword("cityslicka");
-
-    LoginResponseModel response = given()
-        .header("x-api-key", "reqres-free-v1")
-        .body(authData)
-        .contentType(JSON)
-        .log().uri()
-        .log().body()
-        .log().headers()
-        .when()
-        .post("/api/login")
-        .then()
-        .log().status()
-        .log().body()
-        .statusCode(200)
-        .extract().as(LoginResponseModel.class);
-
-    assertEquals("QpwL5tke4Pnpja7X4", response.getToken());
   }
 
   @Test

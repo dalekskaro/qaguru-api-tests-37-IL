@@ -8,8 +8,8 @@ import io.qameta.allure.Owner;
 import static io.restassured.RestAssured.given;
 import java.time.Year;
 import java.util.Locale;
-import model.lombok.AuthDemoQaModel;
-import model.lombok.GenerateTokenDemoQaModel;
+import model.AuthDemoQaModel;
+import model.GenerateTokenDemoQaModel;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import static specs.DemoQaSpec.demoQaRequestSpecification;
 import static specs.ResponceSpec.responseSpecification;
+import static specs.ResponceSpec.responseSpecificationWithTwoCode;
 
 @Tag("homework-14")
 @Epic("DemoQa. Проверка авторизации")
@@ -40,7 +41,7 @@ public class HwAuthTests {
             .when()
             .post("/Account/v1/User")
             .then()
-            .spec(responseSpecification)
+            .spec(responseSpecificationWithTwoCode(201,406))
             .extract().statusCode());
 
     step("Проверяем, добавлен ли пользователь или он уже существует", () ->
@@ -70,8 +71,7 @@ public class HwAuthTests {
             .when()
             .post("/Account/v1/GenerateToken")
             .then()
-            .spec(responseSpecification)
-            .statusCode(200)
+            .spec(responseSpecification(200))
             .extract().as(GenerateTokenDemoQaModel.class));
 
     step("Проверяем тело ответа", () ->
@@ -111,8 +111,7 @@ public class HwAuthTests {
             .when()
             .post("/Account/v1/GenerateToken")
             .then()
-            .spec(responseSpecification)
-            .statusCode(200)
+            .spec(responseSpecification(200))
             .extract().as(GenerateTokenDemoQaModel.class));
 
     step("Проверяем тело ответа", () ->
@@ -152,8 +151,7 @@ public class HwAuthTests {
             .when()
             .post("/Account/v1/GenerateToken")
             .then()
-            .spec(responseSpecification)
-            .statusCode(200)
+            .spec(responseSpecification(200))
             .extract().as(GenerateTokenDemoQaModel.class));
 
     step("Проверяем тело ответа", () ->
