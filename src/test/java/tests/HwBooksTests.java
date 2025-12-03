@@ -1,60 +1,112 @@
 package tests;
 
-import io.restassured.RestAssured;
+import static io.qameta.allure.Allure.step;
+import io.qameta.allure.Description;
+import io.qameta.allure.Epic;
+import io.qameta.allure.Owner;
 import static io.restassured.RestAssured.given;
-import static io.restassured.http.ContentType.JSON;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
-import org.junit.jupiter.api.BeforeAll;
+import model.BookDemoQaModel;
+import model.BooksDemoQaModel;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import static specs.DemoQaSpec.demoQaRequestSpecification;
+import static specs.ResponceSpec.responseSpecification;
 
-@Tag("homework-13")
+@Tag("homework-14")
+@Epic("DemoQa. Проверка данных по книге")
+@Owner("Irina Attano")
 public class HwBooksTests {
 
-  @BeforeAll
-  static void setUri() {
-    RestAssured.baseURI = "https://demoqa.com";
-  }
-
-
   @Test
-  @DisplayName("GET Получение списка книг")
+  @Description("Получение списка книг")
+  @DisplayName("GET /BookStore/v1/Books")
   void getAllBooksTest() {
-    given()
-        .contentType(JSON)
-        .log().uri()
-        .when()
-        .get("/BookStore/v1/Books")
-        .then()
-        .log().body()
-        .statusCode(200)
-        .body("books[0].isbn", equalTo("9781449325862"))
-        .body("books[0].title", equalTo("Git Pocket Guide"))
-        .body("books[0].author", equalTo("Richard E. Silverman"))
-        .body("books[0].pages", equalTo(234))
-        .body("books[0].description", containsString("This pocket guide"))
-        .body("books[0].website", containsString("chimera.labs.oreilly"));
+    BooksDemoQaModel response = step("Совершаем вызов метода", () ->
+        given(demoQaRequestSpecification)
+            .when()
+            .get("/BookStore/v1/Books")
+            .then()
+            .spec(responseSpecification(200))
+            .extract().as(BooksDemoQaModel.class));
+
+    step("Проверяем тело ответа", () ->
+        {
+          BookDemoQaModel book = response.getBooks().get(0);
+
+          SoftAssertions.assertSoftly(softAssertions -> {
+            softAssertions.assertThat(book.getIsbn())
+                .describedAs("Проверяем значение isbn")
+                .isEqualTo("9781449325862");
+
+            softAssertions.assertThat(book.getTitle())
+                .describedAs("Проверяем значение title")
+                .isEqualTo("Git Pocket Guide");
+
+            softAssertions.assertThat(book.getAuthor())
+                .describedAs("Проверяем значение author")
+                .isEqualTo("Richard E. Silverman");
+
+            softAssertions.assertThat(book.getPages())
+                .describedAs("Проверяем значение pages")
+                .isEqualTo(234);
+
+            softAssertions.assertThat(book.getDescription())
+                .describedAs("Проверяем значение description")
+                .contains("This pocket guide");
+
+            softAssertions.assertThat(book.getWebsite())
+                .describedAs("Проверяем значение website")
+                .contains("chimera.labs.oreilly");
+          });
+        }
+    );
   }
 
   @Test
-  @DisplayName("GET Получение списка книг при помощи ISBN")
+  @Description("Получение списка книг при помощи ISBN")
+  @DisplayName("GET /BookStore/v1/Books?ISBN={isbn}")
   void getBooksByIsbnTest() {
-    given()
-        .contentType(JSON)
-        .log().uri()
-        .queryParam("ISBN", "9781449325862")
-        .when()
-        .get("/BookStore/v1/Books")
-        .then()
-        .log().body()
-        .statusCode(200)
-        .body("books[0].isbn", equalTo("9781449325862"))
-        .body("books[0].title", equalTo("Git Pocket Guide"))
-        .body("books[0].author", equalTo("Richard E. Silverman"))
-        .body("books[0].pages", equalTo(234))
-        .body("books[0].description", containsString("This pocket guide"))
-        .body("books[0].website", containsString("chimera.labs.oreilly"));
+    BooksDemoQaModel response = step("Совершаем вызов метода", () ->
+        given(demoQaRequestSpecification)
+            .queryParam("ISBN", "9781449325862")
+            .when()
+            .get("/BookStore/v1/Books")
+            .then()
+            .spec(responseSpecification(200))
+            .extract().as(BooksDemoQaModel.class));
+
+    step("Проверяем тело ответа", () ->
+        {
+          BookDemoQaModel book = response.getBooks().get(0);
+
+          SoftAssertions.assertSoftly(softAssertions -> {
+            softAssertions.assertThat(book.getIsbn())
+                .describedAs("Проверяем значение isbn")
+                .isEqualTo("9781449325862");
+
+            softAssertions.assertThat(book.getTitle())
+                .describedAs("Проверяем значение title")
+                .isEqualTo("Git Pocket Guide");
+
+            softAssertions.assertThat(book.getAuthor())
+                .describedAs("Проверяем значение author")
+                .isEqualTo("Richard E. Silverman");
+
+            softAssertions.assertThat(book.getPages())
+                .describedAs("Проверяем значение pages")
+                .isEqualTo(234);
+
+            softAssertions.assertThat(book.getDescription())
+                .describedAs("Проверяем значение description")
+                .contains("This pocket guide");
+
+            softAssertions.assertThat(book.getWebsite())
+                .describedAs("Проверяем значение website")
+                .contains("chimera.labs.oreilly");
+          });
+        }
+    );
   }
 }

@@ -1,82 +1,121 @@
 package tests;
 
-import io.restassured.RestAssured;
+import com.github.javafaker.Faker;
+import static io.qameta.allure.Allure.step;
+import io.qameta.allure.Description;
+import io.qameta.allure.Epic;
+import io.qameta.allure.Owner;
 import static io.restassured.RestAssured.given;
-import static io.restassured.http.ContentType.JSON;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
-import org.junit.jupiter.api.BeforeAll;
+import java.time.LocalDate;
+import java.util.Locale;
+import model.UserReqresRequestModel;
+import model.UserReqresResponseModel;
+import org.assertj.core.api.SoftAssertions;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import static specs.ReqresSpec.reqresRequestSpecification;
+import static specs.ResponceSpec.responseSpecification;
 
-@Tag("homework-13")
+@Tag("homework-14")
+@Epic("Reqres. Проверка изменения данных юзера")
+@Owner("Irina Attano")
 public class HwReqresTests {
 
-  @BeforeAll
-  static void setUri() {
-    RestAssured.baseURI = "https://reqres.in";
-  }
+  static Faker faker = new Faker(new Locale("en"));
+
+  long userId = faker.number().randomNumber();
+  String userEmail = faker.internet().emailAddress(),
+      userFirstName = faker.name().firstName(),
+      userLastName = faker.name().lastName(),
+      date = LocalDate.now().toString();
 
   @Test
-  @DisplayName("PATCH Изменение частичной информации о юзере")
+  @Description("Изменение частичной информации о юзере")
+  @DisplayName("PATCH /api/users/{id}")
   void patchUserTest() {
-    String body = "{\"email\": \"email.patch@qa.test\"}";
-    int userId = 1;
+    UserReqresRequestModel body = new UserReqresRequestModel();
+    body.setEmail(userEmail);
 
-    given()
-        .header("x-api-key", "reqres-free-v1")
-        .contentType(JSON)
-        .body(body)
-        .log().uri()
-        .when()
-        .patch("/api/users/" + userId)
-        .then()
-        .log().status()
-        .log().body()
-        .statusCode(200)
-        .body("email", is("email.patch@qa.test"))
-        .body("updatedAt", containsString("2025"));
+    UserReqresResponseModel response = step("Совершаем вызов метода", () ->
+        given(reqresRequestSpecification)
+            .body(body)
+            .when()
+            .patch("/api/users/" + userId)
+            .then()
+            .spec(responseSpecification(200))
+            .extract().as(UserReqresResponseModel.class));
+
+    step("Проверяем тело ответа", () ->
+        {
+          SoftAssertions.assertSoftly(softAssertions -> {
+            softAssertions.assertThat(response.getEmail())
+                .describedAs("Проверяем значение email")
+                .isEqualTo(userEmail);
+
+            softAssertions.assertThat(response.getUpdatedAt())
+                .describedAs("Проверяем, что значение updatedAt содержит текущую дату")
+                .contains(date);
+          });
+        }
+    );
   }
 
   @Test
-  @DisplayName("PUT Изменение информации о юзере")
+  @Description("Изменение информации о юзере")
+  @DisplayName("PUT /api/users/{id}")
   void putUserTest() {
-    String body = "{\"email\": \"Hamilton.Patch@qa.test\",\n"
-        + "    \"first_name\": \"Hamilton\",\n"
-        + "    \"last_name\": \"Patch\"\n}";
-    int userId = 1;
+    UserReqresRequestModel body = new UserReqresRequestModel();
+    body.setEmail(userEmail);
+    body.setFirstName(userFirstName);
+    body.setLastName(userLastName);
 
-    given()
-        .header("x-api-key", "reqres-free-v1")
-        .contentType(JSON)
-        .body(body)
-        .log().uri()
-        .when()
-        .put("/api/users/" + userId)
-        .then()
-        .log().status()
-        .log().body()
-        .statusCode(200)
-        .body("email", is("Hamilton.Patch@qa.test"))
-        .body("first_name", is("Hamilton"))
-        .body("last_name", is("Patch"))
-        .body("updatedAt", containsString("2025"));
+    UserReqresResponseModel response = step("Совершаем вызов метода", () ->
+        given(reqresRequestSpecification)
+            .body(body)
+            .when()
+            .put("/api/users/" + userId)
+            .then()
+            .spec(responseSpecification(200))
+            .extract().as(UserReqresResponseModel.class));
+
+    step("Проверяем тело ответа", () ->
+        {
+          SoftAssertions.assertSoftly(softAssertions -> {
+            softAssertions.assertThat(response.getEmail())
+                .describedAs("Проверяем значение email")
+                .isEqualTo(userEmail);
+
+            softAssertions.assertThat(response.getFirstName())
+                .describedAs("Проверяем значение first_name")
+                .isEqualTo(userFirstName);
+
+            softAssertions.assertThat(response.getLastName())
+                .describedAs("Проверяем значение last_name")
+                .isEqualTo(userLastName);
+
+            softAssertions.assertThat(response.getUpdatedAt())
+                .describedAs("Проверяем, что значение updatedAt содержит текущую дату")
+                .contains(date);
+          });
+        }
+    );
   }
 
   @Test
-  @DisplayName("DELETE Удаление пользователя")
+  @Description("Удаление пользователя")
+  @DisplayName("DELETE /api/users/{id}")
   void deleteUserTest() {
-    int userId = 1;
 
-    given()
-        .header("x-api-key", "reqres-free-v1")
-        .contentType(JSON)
-        .log().uri()
-        .when()
-        .delete("/api/users/" + userId)
-        .then()
-        .log().status()
-        .statusCode(204);
+    int statusCode = step("Совершаем вызов метода", () ->
+        given(reqresRequestSpecification)
+            .when()
+            .delete("/api/users/" + userId)
+            .then()
+            .spec(responseSpecification(204))
+            .extract().statusCode());
+
+    step("Проверяем статус код", () -> assertEquals(204, statusCode));
   }
 }

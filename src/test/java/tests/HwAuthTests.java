@@ -1,109 +1,179 @@
 package tests;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.restassured.RestAssured;
+import com.github.javafaker.Faker;
+import static io.qameta.allure.Allure.step;
+import io.qameta.allure.Description;
+import io.qameta.allure.Epic;
+import io.qameta.allure.Owner;
 import static io.restassured.RestAssured.given;
-import static io.restassured.http.ContentType.JSON;
-import java.io.IOException;
-import java.io.InputStream;
-import model.pojo.AuthRequest;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
+import java.time.Year;
+import java.util.Locale;
+import model.AuthDemoQaModel;
+import model.GenerateTokenDemoQaModel;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import static specs.DemoQaSpec.demoQaRequestSpecification;
+import static specs.ResponceSpec.responseSpecification;
+import static specs.ResponceSpec.responseSpecificationWithTwoCode;
 
-@Tag("homework-13")
+@Tag("homework-14")
+@Epic("DemoQa. Проверка авторизации")
+@Owner("Irina Attano")
 public class HwAuthTests {
 
-  private static final ObjectMapper MAPPER = new ObjectMapper();
+  static Faker faker = new Faker(new Locale("en"));
+
+  static String loginForUser = faker.overwatch().hero(),
+      passwordForUser = "1Qa!2Qa!3Qa!";
 
   @BeforeAll
-  static void setUri() {
-    RestAssured.baseURI = "https://demoqa.com";
-  }
+  static void auth() {
+    AuthDemoQaModel body = new AuthDemoQaModel();
+    body.setUserName(loginForUser);
+    body.setPassword(passwordForUser);
 
-  @BeforeAll
-  static void auth() throws IOException {
-    InputStream is = HwAuthTests.class.getClassLoader().getResourceAsStream("json/AuthBody.json");
-    AuthRequest request = MAPPER.readValue(is, AuthRequest.class);
+    int status = step("Совершаем вызов метода добавления пользователя", () ->
+        given(demoQaRequestSpecification)
+            .body(body)
+            .when()
+            .post("/Account/v1/User")
+            .then()
+            .spec(responseSpecificationWithTwoCode(201,406))
+            .extract().statusCode());
 
-    int status = given()
-        .body(request)
-        .contentType(JSON)
-        .log().uri()
-        .when()
-        .post("/Account/v1/User")
-        .then()
-        .log().status()
-        .extract().statusCode();
-
-    if (status == 201) {
-      System.out.println("Пользователь добавлен");
-    } else {
-      if (status == 406) {
-        System.out.println("Пользователь НЕ добавлен - уже существует");
+    step("Проверяем, добавлен ли пользователь или он уже существует", () ->
+    {
+      if (status == 201) {
+        System.out.println("Пользователь добавлен");
+      } else {
+        if (status == 406) {
+          System.out.println("Пользователь НЕ добавлен - уже существует");
+        }
       }
-    }
+    });
   }
 
   @Test
-  @DisplayName("POST Успешная авторизация (генерация токена)")
-  void successfulLoginTest() throws IOException {
-    InputStream is = getClass().getClassLoader().getResourceAsStream("json/AuthBody.json");
-    AuthRequest request = MAPPER.readValue(is, AuthRequest.class);
+  @Description("Успешная авторизация (генерация токена)")
+  @DisplayName("POST /Account/v1/GenerateToken")
+  void successfulLoginTest() {
+    String year = String.valueOf(Year.now().getValue());
+    AuthDemoQaModel body = new AuthDemoQaModel();
+    body.setUserName(loginForUser);
+    body.setPassword(passwordForUser);
 
-    given()
-        .body(request)
-        .contentType(JSON)
-        .log().uri()
-        .when()
-        .post("/Account/v1/GenerateToken")
-        .then()
-        .log().all()
-        .statusCode(200)
-        .body("status", is("Success"))
-        .body("result", is("User authorized successfully."));
+    GenerateTokenDemoQaModel response = step("Совершаем вызов метода", () ->
+        given(demoQaRequestSpecification)
+            .body(body)
+            .when()
+            .post("/Account/v1/GenerateToken")
+            .then()
+            .spec(responseSpecification(200))
+            .extract().as(GenerateTokenDemoQaModel.class));
+
+    step("Проверяем тело ответа", () ->
+        {
+          SoftAssertions.assertSoftly(softAssertions -> {
+            softAssertions.assertThat(response.getToken())
+                .describedAs("Проверяем, что значение token не пусто")
+                .isNotNull();
+
+            softAssertions.assertThat(response.getStatus())
+                .describedAs("Проверяем значение status")
+                .isEqualTo("Success");
+
+            softAssertions.assertThat(response.getResult())
+                .describedAs("Проверяем значение result")
+                .isEqualTo("User authorized successfully.");
+
+            softAssertions.assertThat(response.getExpires())
+                .describedAs("Проверяем, что значение expires содержит текущий год")
+                .contains(year);
+          });
+        }
+    );
   }
 
   @Test
-  @DisplayName("POST Неуспешная авторизация (пароль не верный)")
+  @Description("Неуспешная авторизация (пароль не верный)")
+  @DisplayName("POST /Account/v1/GenerateToken. Wrong password")
   void unsuccessfulLoginIncorrectPasswordTest() {
-    String authData = "{\"userName\": \"attano37\", \"password\": \".String37\"}";
+    AuthDemoQaModel body = new AuthDemoQaModel();
+    body.setUserName(loginForUser);
+    body.setPassword(passwordForUser + "1");
 
-    given()
-        .body(authData)
-        .contentType(JSON)
-        .log().uri()
-        .when()
-        .post("/Account/v1/GenerateToken")
-        .then()
-        .log().all()
-        .statusCode(200)
-        .body("token", is(nullValue()))
-        .body("expires", is(nullValue()))
-        .body("status", is("Failed"))
-        .body("result", is("User authorization failed."));
+    GenerateTokenDemoQaModel response = step("Совершаем вызов метода", () ->
+        given(demoQaRequestSpecification)
+            .body(body)
+            .when()
+            .post("/Account/v1/GenerateToken")
+            .then()
+            .spec(responseSpecification(200))
+            .extract().as(GenerateTokenDemoQaModel.class));
+
+    step("Проверяем тело ответа", () ->
+        {
+          SoftAssertions.assertSoftly(softAssertions -> {
+            softAssertions.assertThat(response.getToken())
+                .describedAs("Проверяем, что значение token пусто")
+                .isNull();
+
+            softAssertions.assertThat(response.getStatus())
+                .describedAs("Проверяем значение status")
+                .isEqualTo("Failed");
+
+            softAssertions.assertThat(response.getResult())
+                .describedAs("Проверяем значение result")
+                .isEqualTo("User authorization failed.");
+
+            softAssertions.assertThat(response.getExpires())
+                .describedAs("Проверяем, что значение expires пусто")
+                .isNull();
+          });
+        }
+    );
   }
 
   @Test
-  @DisplayName("POST Неуспешная авторизация (пользователя не существует)")
+  @Description("Неуспешная авторизация (пользователя не существует)")
+  @DisplayName("POST /Account/v1/GenerateToken. User not exist")
   void unsuccessfulLoginIncorrectUserNameTest() {
-    String authData = "{\"userName\": \"attano\", \"password\": \".String37!\"}";
+    AuthDemoQaModel body = new AuthDemoQaModel();
+    body.setUserName(loginForUser + "1");
+    body.setPassword(passwordForUser);
 
-    given()
-        .body(authData)
-        .contentType(JSON)
-        .log().uri()
-        .when()
-        .post("/Account/v1/GenerateToken")
-        .then()
-        .log().all()
-        .statusCode(200)
-        .body("token", is(nullValue()))
-        .body("expires", is(nullValue()))
-        .body("status", is("Failed"))
-        .body("result", is("User authorization failed."));
+    GenerateTokenDemoQaModel response = step("Совершаем вызов метода", () ->
+        given(demoQaRequestSpecification)
+            .body(body)
+            .when()
+            .post("/Account/v1/GenerateToken")
+            .then()
+            .spec(responseSpecification(200))
+            .extract().as(GenerateTokenDemoQaModel.class));
+
+    step("Проверяем тело ответа", () ->
+        {
+          SoftAssertions.assertSoftly(softAssertions -> {
+            softAssertions.assertThat(response.getToken())
+                .describedAs("Проверяем, что значение token пусто")
+                .isNull();
+
+            softAssertions.assertThat(response.getStatus())
+                .describedAs("Проверяем значение status")
+                .isEqualTo("Failed");
+
+            softAssertions.assertThat(response.getResult())
+                .describedAs("Проверяем значение result")
+                .isEqualTo("User authorization failed.");
+
+            softAssertions.assertThat(response.getExpires())
+                .describedAs("Проверяем, что значение expires пусто")
+                .isNull();
+          });
+        }
+    );
   }
 }
